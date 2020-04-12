@@ -24,7 +24,7 @@ class UsersController < ApplicationController
   private
 
   def collection
-    User.all
+    User.ordered
   end
 
   def resource
