@@ -68,5 +68,3 @@ gem 'rspec-rails'
 gem 'simple_form'
 gem 'kaminari'
 gem 'meta-tags'
-
-
