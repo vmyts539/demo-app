@@ -7,5 +7,6 @@ html
     = stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload'
     = javascript_pack_tag 'application', 'data-turbolinks-track': 'reload'
   body
-    = react_component("HelloWorld", { greeting: "Hello from react-rails." })
-    = yield
+    .container
+      = react_component("HelloWorld", { greeting: "Hello from react-rails." })
+      = yield
