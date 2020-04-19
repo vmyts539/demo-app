@@ -1,0 +1,4 @@
+.mt-5
+  - unless @users.empty?
+    - @users.each do |user|
+      p= user.full_name

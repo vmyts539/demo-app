@@ -1,5 +1,5 @@
 class User < ApplicationRecord
-  searchkick word_start: [:first_name]
+  searchkick word_start: [:first_name, :last_name]
 
   scope :ordered, -> { order(id: :desc) }
 
@@ -7,5 +7,15 @@ class User < ApplicationRecord
 
   def full_name
     "#{first_name} #{last_name}"
+  end
+
+  def search_data
+    {
+      id: id,
+      first_name: first_name,
+      last_name: last_name,
+      email: email,
+      phone: phone
+    }
   end
 end
