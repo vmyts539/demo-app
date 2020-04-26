@@ -1,12 +1,17 @@
 import React from "react"
-import PropTypes from "prop-types"
 
 class Users extends React.Component {
+  constructor(props){
+    super(props);
+  };
+
   render () {
     return (
-      <React.Fragment>
+      <>
         <h2 className="mt-5">Users goes here</h2>
-      </React.Fragment>
+        <div className="users">
+        </div>
+      </>
     );
   }
 }

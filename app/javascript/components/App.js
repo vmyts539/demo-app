@@ -1,12 +1,13 @@
 import React from "react"
 import axios from 'axios';
 
-import Users from '../components/Users'
+// import Users from '../components/Users'
 
 class App extends React.Component {
 
   constructor() {
     super();
+    this.state = {};
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleSearchChange = this.handleSearchChange.bind(this);
   };
@@ -17,27 +18,20 @@ class App extends React.Component {
 
   handleSubmit(event) {
     event.preventDefault();
-
-    console.log(event);
-    console.log(this.state.keyword);
+    var self = this;
 
     axios({
       url: '/search?search=' + this.state.keyword,
-
       method: 'get',
+
       data_type: "json",
       content_type: 'application/json',
       headers: { 'Accept': 'application/json'},
       })
       .then(function (response) {
-          //handle success
-          console.log(response);
-          console.log('++++++');
+        self.setState({users: response.data.data.users});
       })
       .catch(function (response) {
-          //handle error
-          console.log(response);
-          console.log('-----');
       });
   };
 
@@ -54,11 +48,20 @@ class App extends React.Component {
             <button name="button" type="submit" className="btn btn-primary" onClick={this.handleSubmit}>Search</button>
           </div>
         </form>
-
-        <Users />
+        <h1>User goes here</h1>
+        {
+          this.state.users &&
+          this.state.users.map((user) => {
+            return <User key={user.id} user={user} />
+          })
+        }
       </>
     );
   }
+}
+
+const User = ({user}) => {
+  return <div className='user'>{user.first_name} {user.last_name}</div>
 }
 
 export default App
