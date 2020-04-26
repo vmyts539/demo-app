@@ -1,16 +1,20 @@
 import React from "react"
-import PropTypes from "prop-types"
+import { Provider } from 'react-redux';
+import { createStore } from 'redux';
+import rootReducer from '../redux/reducers';
+
+import App from "../components/App"
+
+const store = createStore(rootReducer)
+
 class HelloWorld extends React.Component {
   render () {
     return (
-      <React.Fragment>
-        Greeting: {this.props.greeting}
-      </React.Fragment>
+      <Provider store={store}>
+        <App />
+      </Provider>
     );
   }
 }
 
-HelloWorld.propTypes = {
-  greeting: PropTypes.string
-};
 export default HelloWorld
