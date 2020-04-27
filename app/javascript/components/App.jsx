@@ -37,8 +37,8 @@ class App extends React.Component {
   render () {
     return (
       <div className='container'>
-        <h1>h1 Searching Engine by vmyts SoftServe :)</h1>
-        <form className="form-group mt-5" action="/search" acceptCharset="UTF-8" method="get">
+        <h1 className='mt-3'>Searching Engine by vmyts SoftServe :)</h1>
+        <form className="form-group mt-4" action="/search" acceptCharset="UTF-8" method="get">
           <div className="w-50">
             <input type="text" name="search" id="search" className="form-control" autoComplete="off" placeholder="Search Me" onChange={this.handleSearchChange} />
           </div>

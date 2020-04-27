@@ -29,3 +29,9 @@
 /yarn-error.log
 yarn-debug.log*
 .yarn-integrity
+.idea
+.rakeTasks
+.generators
+/app/.DS_Store
+.DS_Store
+/app/assets/.DS_STORE
