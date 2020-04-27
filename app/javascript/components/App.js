@@ -1,8 +1,6 @@
 import React from "react"
 import axios from 'axios';
 
-// import Users from '../components/Users'
-
 class App extends React.Component {
 
   constructor() {
@@ -38,7 +36,8 @@ class App extends React.Component {
 
   render () {
     return (
-      <>
+      <div className='container'>
+        <h1>h1 Searching Engine by vmyts SoftServe :)</h1>
         <form className="form-group mt-5" action="/search" acceptCharset="UTF-8" method="get">
           <div className="w-50">
             <input type="text" name="search" id="search" className="form-control" autoComplete="off" placeholder="Search Me" onChange={this.handleSearchChange} />
@@ -55,7 +54,7 @@ class App extends React.Component {
             return <User key={user.id} user={user} />
           })
         }
-      </>
+      </div>
     );
   }
 }
