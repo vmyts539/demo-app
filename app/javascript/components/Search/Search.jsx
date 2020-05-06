@@ -2,6 +2,9 @@ import React from "react";
 import axios from 'axios';
 import { Link } from "react-router-dom";
 
+import $ from 'jquery';
+import 'jquery-ui/ui/widgets/autocomplete';
+
 import './search.scss';
 
 class Search extends React.Component {
@@ -14,6 +17,28 @@ class Search extends React.Component {
 
   handleSearchChange(event) {
     this.setState({keyword: event.target.value})
+    var autocompletion = [];
+
+    axios({
+      url: '/search?search=' + event.target.value,
+      method: 'get',
+      data_type: "json",
+      content_type: 'application/json',
+      headers: { 'Accept': 'application/json'},
+    })
+    .then(function (response) {
+      console.log(response)
+      response.data.data.users.map(user => {
+        autocompletion.push(user.first_name + ' ' + user.last_name)
+      })
+
+      console.log(autocompletion)
+
+      $("#search").autocomplete({source: autocompletion});
+    })
+    .catch(function (response) {
+      autocompletion = ['Sry']
+    });
   };
 
   handleSubmit(event) {
@@ -26,12 +51,12 @@ class Search extends React.Component {
       data_type: "json",
       content_type: 'application/json',
       headers: { 'Accept': 'application/json'},
-      })
-      .then(function (response) {
-        self.setState({users: response.data.data.users});
-      })
-      .catch(function (response) {
-      });
+    })
+    .then(function (response) {
+      self.setState({users: response.data.data.users});
+    })
+    .catch(function (response) {
+    });
   };
 
   render () {
@@ -49,7 +74,7 @@ class Search extends React.Component {
               <input type="text"
                      name="search"
                      id="search"
-                     className="form-control"
+                     className="form-control search-field"
                      autoComplete="off"
                      placeholder="Search Me"
                      onChange={this.handleSearchChange}

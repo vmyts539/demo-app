@@ -1,6 +1,10 @@
 
 .search {
   margin-top: 50px;
+
+  .search-field {
+    width: 300px !important;
+  }
 }
 
 .user {
@@ -22,4 +26,27 @@
       font-weight: bold;
     }
   }
+}
+
+.ui-autocomplete {
+  z-index: 999;
+  width: 300px;
+  padding: 0;
+  list-style: none;
+  background: white;
+  border: 1px solid #80bdff;
+
+  .ui-menu-item {
+    padding: 10px 12px;
+    border-bottom: 1px solid #80bdff;
+    bordet-top: 1px solid #80bdff;
+    color: red;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}
+.ui-helper-hidden-accessible {
+  display: none;
 }
