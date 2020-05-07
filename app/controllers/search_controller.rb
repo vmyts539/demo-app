@@ -1,7 +1,7 @@
 class SearchController < ApplicationController
   def index
     @users = User.search params[:search],
-      fields: [:first_name, :last_name],
+      fields: [:first_name, :last_name, :full_name],
       match: :word_start,
              misspellings: { edit_distance: 0 }
 

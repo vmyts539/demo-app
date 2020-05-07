@@ -12,51 +12,43 @@ class Search extends React.Component {
     super();
     this.state = {};
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleSearchChange = this.handleSearchChange.bind(this);
+    this.inputChange = this.inputChange.bind(this);
   };
 
-  handleSearchChange(event) {
-    this.setState({keyword: event.target.value})
-    var autocompletion = [];
-
-    axios({
-      url: '/search?search=' + event.target.value,
-      method: 'get',
-      data_type: "json",
-      content_type: 'application/json',
-      headers: { 'Accept': 'application/json'},
-    })
-    .then(function (response) {
-      console.log(response)
-      response.data.data.users.map(user => {
-        autocompletion.push(user.first_name + ' ' + user.last_name)
-      })
-
-      console.log(autocompletion)
-
-      $("#search").autocomplete({source: autocompletion});
-    })
-    .catch(function (response) {
-      autocompletion = ['Sry']
-    });
-  };
-
-  handleSubmit(event) {
-    event.preventDefault();
+  getUser(keyword) {
     const self = this;
 
     axios({
-      url: '/search?search=' + this.state.keyword,
+      url: '/search?search=' + keyword,
       method: 'get',
       data_type: "json",
       content_type: 'application/json',
       headers: { 'Accept': 'application/json'},
     })
     .then(function (response) {
-      self.setState({users: response.data.data.users});
+      self.setState({data: response.data.data.users});
     })
     .catch(function (response) {
     });
+  }
+
+  inputChange(event) {
+    this.setState({keyword: event.target.value});
+
+    let autocompletion = [];
+    console.log(event.target.value);
+    this.getUser(event.target.value);
+    this.state.data && this.state.data.map(user => {
+      autocompletion.push(user.first_name + ' ' + user.last_name);
+    })
+
+    $("#search").autocomplete({source: autocompletion});
+  }
+
+  handleSubmit(event) {
+    event.preventDefault();
+    this.getUser(this.state.keyword);
+    this.setState({users: this.state.data});
   };
 
   render () {
@@ -68,7 +60,7 @@ class Search extends React.Component {
               action="/search"
               acceptCharset="UTF-8"
               method="get"
-              >
+        >
           <div className="search  w-50">
             <div className="">
               <input type="text"
@@ -77,7 +69,7 @@ class Search extends React.Component {
                      className="form-control search-field"
                      autoComplete="off"
                      placeholder="Search Me"
-                     onChange={this.handleSearchChange}
+                     onChange={this.inputChange}
               />
             </div>
 
@@ -85,7 +77,8 @@ class Search extends React.Component {
               <button name="button"
                       type="submit"
                       className="btn btn-primary"
-                      onClick={this.handleSubmit}>Search</button>
+                      onClick={this.handleSubmit}
+              >Search</button>
             </div>
           </div>
         </form>
@@ -97,12 +90,11 @@ class Search extends React.Component {
           }
         </div>
       </div>
-    );
+    )
   }
 }
 
 const User = ({user}) => {
-
   return (
     <div className='user w-50 mt-3'>
       <div className="full-name text-center p-3">{user.first_name} {user.last_name}</div>
@@ -112,10 +104,9 @@ const User = ({user}) => {
         <div className="phone"><span>Phone:</span> {user.phone}</div>
       </div>
 
-      <Link to={"/users/" + user.id} >
+      <Link to={"/users/" + user.id}>
         <button className="btn btn-primary mt-3">Show</button>
       </Link>
-
     </div>
   )
 }
