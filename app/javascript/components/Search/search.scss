@@ -28,25 +28,17 @@
   }
 }
 
-.ui-autocomplete {
-  z-index: 999;
-  width: 300px;
-  padding: 0;
-  list-style: none;
-  background: white;
-  border: 1px solid #80bdff;
+.loader-wrapper {
+  .loader {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: rgba(0,0,0,0.5);
 
-  .ui-menu-item {
-    padding: 10px 12px;
-    border-bottom: 1px solid #80bdff;
-    bordet-top: 1px solid #80bdff;
-    color: red;
-
-    &:last-child {
-      border-bottom: none;
-    }
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
-}
-.ui-helper-hidden-accessible {
-  display: none;
 }
