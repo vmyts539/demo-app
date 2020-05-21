@@ -42,3 +42,23 @@
     align-items: center;
   }
 }
+
+input {
+  height: 38px;
+  padding: 5px;
+  font-size: 18px;
+  border-radius: 4px;
+  border: 1px solid rgb(33, 105, 200);
+  outline: none;
+
+  &:hover {
+    box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.5);
+  }
+}
+
+.form {
+  div ~ input {
+    padding: 10px;
+    font-size: 16px;
+  }
+}

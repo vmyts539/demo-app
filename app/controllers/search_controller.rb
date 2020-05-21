@@ -5,12 +5,8 @@ class SearchController < ApplicationController
       match: :word_start,
              misspellings: { edit_distance: 0 }
 
-    # @projects = Project.search params[:search],
-    #   fields: ["name^10", "description"],
-    #   match: :word_start,
-    #          misspellings: { edit_distance: 0 }
+    sleep(1)
 
-    sleep(2)
     respond_to do |format|
       format.html
       format.json
@@ -29,6 +25,4 @@ end
 
 # add highliting
 # autocomplete
-# redux
-# push to heroku
 # add elastic specs

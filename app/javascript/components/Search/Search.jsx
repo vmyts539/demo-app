@@ -3,37 +3,59 @@ import axios from 'axios';
 import { Link } from "react-router-dom";
 import Loader from 'react-loader-spinner'
 
+import Autocomplete from 'react-autocomplete';
 
 import './search.scss';
-import "react-loader-spinner/dist/loader/css/react-spinner-loader.css"
+import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
+
+const AUTOCOMPLETE = 'autocomplete';
+const SEARCH = 'search';
 
 class Search extends React.Component {
   constructor() {
     super();
-    this.state = { loading: false };
+
+    this.state = {
+      loading: false,
+      keyword: '',
+      userNames: [],
+      visibility: false,
+     };
+
     this.handleSubmit = this.handleSubmit.bind(this);
     this.inputChange = this.inputChange.bind(this);
-    this.setUsers = this.setUsers.bind(this);
+
     this.renderUser = this.renderUser.bind(this);
+    this.autocompleteItem = this.autocompleteItem.bind(this);
+
+    this.setUsers = this.setUsers.bind(this);
+    this.setKeyword = this.setKeyword.bind(this);
+    this.setAutocompletion = this.setAutocompletion.bind(this);
     this.setLoading = this.setLoading.bind(this);
   };
 
-  setUsers(users) { this.setState({users: users}) }
-  setLoading(bool) { this.setState({loading: bool}) }
+  setUsers(users) { this.setState({users: users}) };
+  setKeyword(keyword) { this.setState({keyword: keyword}) };
+  setAutocompletion(userNames) { this.setState({userNames: userNames}) };
+  setLoading(bool) { this.setState({loading: bool}) };
 
-  getUser(keyword) {
-    this.setLoading(true)
+  getUser(keyword, searchType) {
+    searchType === SEARCH && this.setLoading(true)
 
     axios({
-      url: '/search?search=' + keyword,
+      url: `/${searchType}?search=` + keyword,
       method: 'get',
       data_type: "json",
       content_type: 'application/json',
       headers: { 'Accept': 'application/json'},
     })
     .then((response) => {
-      this.setUsers(response.data.data.users);
-      this.setLoading(false);
+      if(searchType === SEARCH) {
+        this.setUsers(response.data.data.users);
+        this.setLoading(false);
+      } else if(searchType === AUTOCOMPLETE) {
+        this.setAutocompletion(response.data)
+      }
     })
     .catch((response) => {
       console.log(response.errors.message);
@@ -42,16 +64,19 @@ class Search extends React.Component {
 
   inputChange(event) {
     this.setState({keyword: event.target.value});
-    // this.getUser(event.target.value);
-    // this.state.data && this.state.data.map(user => {
-    //   // autocomplete logic
-    // })
+    this.getUser(event.target.value, AUTOCOMPLETE);
   }
 
-  handleSubmit(event) {
-    event.preventDefault();
-    this.getUser(this.state.keyword);
+  handleSelect(val) {
+    this.setState({keyword: val});
+    this.setAutocompletion([val])
+    this.state.keyword && this.getUser(val, SEARCH);
   };
+
+  handleSubmit() {
+    this.state.keyword &&
+    this.getUser(this.state.keyword, SEARCH)
+  }
 
   renderUser(user) {
     return(
@@ -70,56 +95,60 @@ class Search extends React.Component {
     )
   }
 
-  render () {
+  autocompleteItem(item, isHighlighted) {
+    return (
+    <div style={{ background: isHighlighted ? 'lightgray' : 'white'}}
+         key={this.state.userNames.indexOf(item)}
+    >
+      {item}
+    </div>)
+  }
+
+  render() {
     return (
       <div className='container d-flex flex-column justify-content-center'>
         <h1 className='mt-3'>Searching Engine by vmyts SoftServe :)</h1>
 
-        <form className="form-group d-flex justify-content-center mt-4"
-              action="/search"
-              acceptCharset="UTF-8"
-              method="get"
-        >
-          <div className="search  w-50">
-            <div className="">
-              <input type="text"
-                     name="search"
-                     id="search"
-                     className="form-control search-field"
-                     autoComplete="off"
-                     placeholder="Search Me"
-                     onChange={this.inputChange}
-              />
-            </div>
+        <div className="form d-flex">
+          <Autocomplete
+            getItemValue={(item) => item}
+            items={this.state.userNames}
+            renderItem={(item, isHighlighted) => this.autocompleteItem(item, isHighlighted)}
+            autoHighlight={true}
+            value={this.state.keyword}
+            onChange={this.inputChange}
+            onSelect={(val) => {
+              this.handleSelect(val)
+            }}
+          />
 
-            <div className="mt-3">
-              <button name="button"
-                      type="submit"
-                      className="btn btn-primary"
-                      onClick={this.handleSubmit}
-              >Search</button>
-            </div>
+          <div className="submit d-inline ml-3">
+            <button name="button"
+                    className="btn btn-primary"
+                    onClick={this.handleSubmit}
+            >Search</button>
           </div>
-        </form>
+        </div>
+
+        <div className="results d-flex flex-column align-items-center">
+          {
+            this.state.users &&
+            this.state.users.map(user => this.renderUser(user))
+          }
+        </div>
+
         <div className="loader-wrapper">
-            {
-              this.state.loading &&
-              <div className="loader">
-                <Loader
-                  type="Oval"
-                  color="#00BFFF"
-                  height={100}
-                  width={100}
-                />
-              </div>
-            }
-
-          <div className="results d-flex flex-column align-items-center">
-            {
-              this.state.users &&
-              this.state.users.map(user => this.renderUser(user))
-            }
+          {
+          this.state.loading &&
+          <div className="loader">
+            <Loader
+              type="Oval"
+              color="#00BFFF"
+              height={100}
+              width={100}
+            />
           </div>
+          }
         </div>
       </div>
     )
