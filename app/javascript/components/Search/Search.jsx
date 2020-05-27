@@ -2,6 +2,8 @@ import React from "react";
 import axios from 'axios';
 import { Link } from "react-router-dom";
 import Loader from 'react-loader-spinner'
+import Highlighter from "react-highlight-words";
+
 
 import Autocomplete from 'react-autocomplete';
 
@@ -100,7 +102,12 @@ class Search extends React.Component {
     <div style={{ background: isHighlighted ? 'lightgray' : 'white'}}
          key={this.state.userNames.indexOf(item)}
     >
-      {item}
+      <Highlighter
+        highlightClassName="highlighted-word"
+        searchWords={[this.state.keyword]}
+        autoEscape={true}
+        textToHighlight={item}
+      />
     </div>)
   }
 
