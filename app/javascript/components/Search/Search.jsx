@@ -1,10 +1,11 @@
 import React from "react";
 import axios from 'axios';
 import { Link } from "react-router-dom";
+
+import {connect} from 'react-redux';
+
 import Loader from 'react-loader-spinner'
 import Highlighter from "react-highlight-words";
-
-
 import Autocomplete from 'react-autocomplete';
 
 import './search.scss';
@@ -21,7 +22,6 @@ class Search extends React.Component {
       loading: false,
       keyword: '',
       userNames: [],
-      visibility: false,
      };
 
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -145,16 +145,15 @@ class Search extends React.Component {
         </div>
 
         <div className="loader-wrapper">
-          {
-          this.state.loading &&
-          <div className="loader">
-            <Loader
-              type="Oval"
-              color="#00BFFF"
-              height={100}
-              width={100}
-            />
-          </div>
+          { this.state.loading &&
+            <div className="loader">
+              <Loader
+                type="Oval"
+                color="#00BFFF"
+                height={100}
+                width={100}
+              />
+            </div>
           }
         </div>
       </div>
@@ -162,4 +161,20 @@ class Search extends React.Component {
   }
 }
 
-export default Search
+const mapStateToProps = state => {
+  console.log(state)
+
+  return {
+    keyword:   state.search.keyword,
+    loading:   state.search.loading,
+    userNames: state.search.userNames,
+    users:     state.search.users,
+    error:     state.search.error,
+  }
+}
+
+const mapDispatchToProps = {
+
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Search)

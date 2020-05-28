@@ -8,11 +8,9 @@ RSpec.describe SearchController, type: :controller do
 
   before(:each) do
     User.search_index.refresh
-    User.reindex
-
   end
 
-  describe "GET #index" do
+  describe "GET #index", search: true do
     it 'searches' do
       expected_data = {
         email: first_user.email,
@@ -27,7 +25,7 @@ RSpec.describe SearchController, type: :controller do
     end
   end
 
-  describe 'GET #autocomplete' do
+  describe 'GET #autocomplete', search: true do
     it 'should be success' do
       get :autocomplete, as: :json, params: { search: 'F' }
       expect(JSON.parse(response.body).first).to eq(first_user.full_name)
