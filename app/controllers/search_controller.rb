@@ -26,3 +26,7 @@ end
 # add highliting
 # autocomplete
 # add elastic specs
+
+
+# highlight search results
+# redux queries

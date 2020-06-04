@@ -2,8 +2,6 @@ import React from "react";
 import axios from 'axios';
 import { Link } from "react-router-dom";
 
-import {connect} from 'react-redux';
-
 import Loader from 'react-loader-spinner'
 import Highlighter from "react-highlight-words";
 import Autocomplete from 'react-autocomplete';
@@ -14,35 +12,21 @@ import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 const AUTOCOMPLETE = 'autocomplete';
 const SEARCH = 'search';
 
-class Search extends React.Component {
-  constructor() {
-    super();
+const Search = ({
+  keyword,
+  loading,
+  userNames,
+  users,
+  error,
+  highlightedSearchResults,
 
-    this.state = {
-      loading: false,
-      keyword: '',
-      userNames: [],
-     };
-
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.inputChange = this.inputChange.bind(this);
-
-    this.renderUser = this.renderUser.bind(this);
-    this.autocompleteItem = this.autocompleteItem.bind(this);
-
-    this.setUsers = this.setUsers.bind(this);
-    this.setKeyword = this.setKeyword.bind(this);
-    this.setAutocompletion = this.setAutocompletion.bind(this);
-    this.setLoading = this.setLoading.bind(this);
-  };
-
-  setUsers(users) { this.setState({users: users}) };
-  setKeyword(keyword) { this.setState({keyword: keyword}) };
-  setAutocompletion(userNames) { this.setState({userNames: userNames}) };
-  setLoading(bool) { this.setState({loading: bool}) };
-
-  getUser(keyword, searchType) {
-    searchType === SEARCH && this.setLoading(true)
+  changeKeyword,
+  setAutocompletion,
+  setUsers,
+  setHighlightedSearchResults,
+}) => {
+  const getUser = (keyword, searchType) => {
+    searchType === SEARCH
 
     axios({
       url: `/${searchType}?search=` + keyword,
@@ -53,37 +37,59 @@ class Search extends React.Component {
     })
     .then((response) => {
       if(searchType === SEARCH) {
-        this.setUsers(response.data.data.users);
-        this.setLoading(false);
+        setUsers(response.data.data.users);
+        setHighlightedSearchResults(keyword);
       } else if(searchType === AUTOCOMPLETE) {
-        this.setAutocompletion(response.data)
+        setAutocompletion(response.data);
       }
     })
     .catch((response) => {
-      console.log(response.errors.message);
+      console.error(response.errors.message);
     });
   }
 
-  inputChange(event) {
-    this.setState({keyword: event.target.value});
-    this.getUser(event.target.value, AUTOCOMPLETE);
+  const inputChange = event => {
+    changeKeyword(event.target.value);
+    getUser(event.target.value, AUTOCOMPLETE);
   }
 
-  handleSelect(val) {
-    this.setState({keyword: val});
-    this.setAutocompletion([val])
-    this.state.keyword && this.getUser(val, SEARCH);
+  const handleSelect = val => {
+    changeKeyword(val);
+    setAutocompletion([val]);
+    keyword && getUser(val, SEARCH);
   };
 
-  handleSubmit() {
-    this.state.keyword &&
-    this.getUser(this.state.keyword, SEARCH)
+  const handleSubmit = () => {
+    keyword &&
+    getUser(keyword, SEARCH)
+  };
+
+  const highlightResults = (highlightedText, searchWords) => {
+    return (
+      <Highlighter
+        highlightClassName="highlighted-word"
+        searchWords={[searchWords]}
+        autoEscape={true}
+        textToHighlight={highlightedText}
+      />
+    )
   }
 
-  renderUser(user) {
+  const autocompleteItem = (item, isHighlighted) => {
+    return (
+    <div style={{ background: isHighlighted ? 'lightgray' : 'white'}}
+         key={userNames.indexOf(item)}
+    >
+      {highlightResults(item, keyword)}
+    </div>)
+  }
+
+  const renderUser = (user) => {
     return(
       <div className='user w-50 mt-3' key={user.id}>
-        <div className="full-name text-center p-3">{user.first_name} {user.last_name}</div>
+        <div className="full-name text-center p-3">
+          {highlightResults(`${user.first_name} ${user.last_name}`, keyword)}
+        </div>
 
         <div className="info d-flex justify-content-between align-items-start">
           <div className="email"><span>Email:</span> {user.email}</div>
@@ -97,84 +103,52 @@ class Search extends React.Component {
     )
   }
 
-  autocompleteItem(item, isHighlighted) {
-    return (
-    <div style={{ background: isHighlighted ? 'lightgray' : 'white'}}
-         key={this.state.userNames.indexOf(item)}
-    >
-      <Highlighter
-        highlightClassName="highlighted-word"
-        searchWords={[this.state.keyword]}
-        autoEscape={true}
-        textToHighlight={item}
-      />
-    </div>)
-  }
+  return (
+    <div className='container d-flex flex-column justify-content-center'>
+      <h1 className='mt-3'>Searching Engine by vmyts SoftServe :)</h1>
 
-  render() {
-    return (
-      <div className='container d-flex flex-column justify-content-center'>
-        <h1 className='mt-3'>Searching Engine by vmyts SoftServe :)</h1>
+      <div className="form d-flex">
+        <Autocomplete
+          getItemValue={(item) => item}
+          items={userNames}
+          renderItem={(item, isHighlighted) => autocompleteItem(item, isHighlighted)}
+          autoHighlight={true}
+          value={keyword}
+          onChange={inputChange}
+          onSelect={(val) => {
+            handleSelect(val)
+          }}
+        />
 
-        <div className="form d-flex">
-          <Autocomplete
-            getItemValue={(item) => item}
-            items={this.state.userNames}
-            renderItem={(item, isHighlighted) => this.autocompleteItem(item, isHighlighted)}
-            autoHighlight={true}
-            value={this.state.keyword}
-            onChange={this.inputChange}
-            onSelect={(val) => {
-              this.handleSelect(val)
-            }}
-          />
-
-          <div className="submit d-inline ml-3">
-            <button name="button"
-                    className="btn btn-primary"
-                    onClick={this.handleSubmit}
-            >Search</button>
-          </div>
-        </div>
-
-        <div className="results d-flex flex-column align-items-center">
-          {
-            this.state.users &&
-            this.state.users.map(user => this.renderUser(user))
-          }
-        </div>
-
-        <div className="loader-wrapper">
-          { this.state.loading &&
-            <div className="loader">
-              <Loader
-                type="Oval"
-                color="#00BFFF"
-                height={100}
-                width={100}
-              />
-            </div>
-          }
+        <div className="submit d-inline ml-3">
+          <button name="button"
+                  className="btn btn-primary"
+                  onClick={handleSubmit}
+          >Search</button>
         </div>
       </div>
-    )
-  }
+
+      <div className="results d-flex flex-column align-items-center">
+        {
+          users &&
+          users.map(user => renderUser(user))
+        }
+      </div>
+
+      <div className="loader-wrapper">
+        { loading &&
+          <div className="loader">
+            <Loader
+              type="Oval"
+              color="#00BFFF"
+              height={100}
+              width={100}
+            />
+          </div>
+        }
+      </div>
+    </div>
+  )
 }
 
-const mapStateToProps = state => {
-  console.log(state)
-
-  return {
-    keyword:   state.search.keyword,
-    loading:   state.search.loading,
-    userNames: state.search.userNames,
-    users:     state.search.users,
-    error:     state.search.error,
-  }
-}
-
-const mapDispatchToProps = {
-
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Search)
+export default Search

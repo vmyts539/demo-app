@@ -1,40 +1,20 @@
-import React from "react";
-
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-} from "react-router-dom";
-
+import React from 'react';
+import { Provider } from 'react-redux';
 import {createStore, compose} from 'redux';
-import {Provider} from 'react-redux'
 
-import Search from "./Search/Search";
-import Header from "./Header/Header";
-import UserPage from "./UserPage/UserPage";
-import rootReducer from "../redux/reducers/rootReducer";
+import rootReducer from '../redux/reducers';
+import Container from './Container';
 
 const store = createStore(rootReducer, compose(
   window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
 ));
 
-class App extends React.Component {
-  render () {
-    return (
-      <>
-        <Router>
-          <Provider store={store}>
-            <Header />
+const Wrapper = () => {
+  return (
+    <Provider store={store}>
+      <Container />
+    </Provider>
+  );
+};
 
-            <Switch>
-              <Route exact path='/' component={Search} />
-              <Route path='/users/:userId' component={UserPage} />
-            </Switch>
-          </Provider>
-        </Router>
-      </>
-    );
-  }
-}
-
-export default App
+export default Wrapper;
