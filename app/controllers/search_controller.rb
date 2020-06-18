@@ -5,7 +5,7 @@ class SearchController < ApplicationController
       match: :word_start,
              misspellings: { edit_distance: 0 }
 
-    sleep(1)
+    sleep(2)
 
     respond_to do |format|
       format.html
@@ -23,10 +23,7 @@ class SearchController < ApplicationController
   end
 end
 
-# add highliting
-# autocomplete
-# add elastic specs
-
-
-# highlight search results
-# redux queries
+# add loader for any operation
+# why combine
+# multimodel elastic
+# add global error page(e.g. 404)

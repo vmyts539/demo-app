@@ -20,12 +20,15 @@ const Container = ({
   loading,
   userNames,
   users,
+  user,
   error,
   highlightedSearchResults,
 
   changeKeyword,
   setAutocompletion,
   setUsers,
+  setUser,
+  setLoading,
   setHighlightedSearchResults,
 }) => (
   <Router>
@@ -44,11 +47,17 @@ const Container = ({
           changeKeyword={changeKeyword}
           setAutocompletion={setAutocompletion}
           setUsers={setUsers}
+          setLoading={setLoading}
           setHighlightedSearchResults={setHighlightedSearchResults}
         />
       </Route>
 
-      <Route path='/users/:userId' component={UserPage} />
+      <Route path='/users/:userId'>
+        <UserPage
+          setUser={setUser}
+          user={user}
+        />
+      </Route>
     </Switch>
   </Router>
 );
@@ -59,16 +68,19 @@ const mapStateToProps = state => {
     loading:                  state.search.loading,
     userNames:                state.search.userNames,
     users:                    state.search.users,
+    user:                     state.search.user,
     error:                    state.search.error,
     highlightedSearchResults: state.search.highlightedSearchResults,
   }
 };
 
 const mapDispatchToProps = dispatch => ({
-  changeKeyword: keyword => dispatch(actions.valueChanged(keyword)),
-  setAutocompletion: userNames => dispatch(actions.autocompletionChanged(userNames)),
-  setUsers: users => dispatch(actions.fetchDataSuccess(users)),
-  setHighlightedSearchResults: results => dispatch(actions.highlightSearchResults(results)),
+  changeKeyword:               keyword =>   dispatch(actions.valueChanged(keyword)),
+  setAutocompletion:           userNames => dispatch(actions.autocompletionChanged(userNames)),
+  setUsers:                    users =>     dispatch(actions.fetchDataSuccess(users)),
+  setUser:                     user =>      dispatch(actions.setUser(user)),
+  setLoading:                  bool =>      dispatch(actions.setLoading(bool)),
+  setHighlightedSearchResults: results =>   dispatch(actions.highlightSearchResults(results)),
 });
 
 Container.propTypes = {
@@ -76,12 +88,15 @@ Container.propTypes = {
   loading:                     PropTypes.bool,
   userNames:                   PropTypes.array,
   users:                       PropTypes.array,
+  user:                        PropTypes.object,
   error:                       PropTypes.string,
   highlightedSearchResults:    PropTypes.string,
 
   changeKeyword:               PropTypes.func,
   setAutocompletion:           PropTypes.func,
   setUsers:                    PropTypes.func,
+  setUser:                     PropTypes.func,
+  setLoading:                  PropTypes.func,
   setHighlightedSearchResults: PropTypes.func,
 };
 

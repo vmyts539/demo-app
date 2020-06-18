@@ -23,10 +23,11 @@ const Search = ({
   changeKeyword,
   setAutocompletion,
   setUsers,
+  setLoading,
   setHighlightedSearchResults,
 }) => {
   const getUser = (keyword, searchType) => {
-    searchType === SEARCH
+    searchType === SEARCH && setLoading(true)
 
     axios({
       url: `/${searchType}?search=` + keyword,
@@ -37,6 +38,7 @@ const Search = ({
     })
     .then((response) => {
       if(searchType === SEARCH) {
+        setLoading(false)
         setUsers(response.data.data.users);
         setHighlightedSearchResults(keyword);
       } else if(searchType === AUTOCOMPLETE) {
