@@ -4,8 +4,7 @@ class SearchController < ApplicationController
       fields: [:first_name, :last_name, :full_name],
       match: :word_start,
              misspellings: { edit_distance: 0 }
-
-    sleep(2)
+    sleep(1)
 
     respond_to do |format|
       format.html
@@ -23,7 +22,9 @@ class SearchController < ApplicationController
   end
 end
 
-# add loader for any operation
-# why combine
-# multimodel elastic
-# add global error page(e.g. 404)
+# [x] add loader for any request
+# [ ] why combine
+# [ ] multimodel elastic
+# [x] add global error page(e.g. 404)
+
+# [x] saga
