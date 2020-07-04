@@ -1,32 +1,19 @@
 import React from 'react';
 import { withRouter } from "react-router-dom";
 import _ from 'lodash';
-import axios from 'axios';
 
 class UserPage extends React.Component {
   constructor(props) {
     super(props);
-  }
 
-  componentDidMount() {
-    const userId = this.props.match.params.userId;
+    const { fetchUser, setUserId } = this.props;
 
-    axios({
-      url: `/api/users/` + userId,
-      method: 'get',
-      data_type: "json",
-      content_type: 'application/json',
-      headers: { 'Accept': 'application/json'},
-    })
-    .then((response) => {
-      this.props.setUser(response.data.data)
-    })
-    .catch((response) => {
-      console.error(response.errors.message);
-    });
+    setUserId(this.props.match.params.userId)
+    fetchUser();
   }
 
   render() {
+    const { error } = this.props
     return (
       <div className="container">
         <h1>User Page</h1>
@@ -36,6 +23,9 @@ class UserPage extends React.Component {
             <p><span className='font-weight-bold'>Email</span>: {this.props.user.email}</p>
             <p><span className='font-weight-bold'>Phone</span>: {this.props.user.phone}</p>
           </>
+        }
+        {error &&
+          <p className="error">{error}</p>
         }
       </div>
     )

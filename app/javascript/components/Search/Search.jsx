@@ -1,5 +1,4 @@
 import React from "react";
-import axios from 'axios';
 import { Link } from "react-router-dom";
 
 import Loader from 'react-loader-spinner'
@@ -9,61 +8,30 @@ import Autocomplete from 'react-autocomplete';
 import './search.scss';
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 
-const AUTOCOMPLETE = 'autocomplete';
-const SEARCH = 'search';
-
 const Search = ({
   keyword,
   loading,
   userNames,
   users,
   error,
-  highlightedSearchResults,
 
+  fetchData,
   changeKeyword,
-  setAutocompletion,
-  setUsers,
-  setLoading,
-  setHighlightedSearchResults,
+  autocompletionChanged,
 }) => {
-  const getUser = (keyword, searchType) => {
-    searchType === SEARCH && setLoading(true)
-
-    axios({
-      url: `/${searchType}?search=` + keyword,
-      method: 'get',
-      data_type: "json",
-      content_type: 'application/json',
-      headers: { 'Accept': 'application/json'},
-    })
-    .then((response) => {
-      if(searchType === SEARCH) {
-        setLoading(false)
-        setUsers(response.data.data.users);
-        setHighlightedSearchResults(keyword);
-      } else if(searchType === AUTOCOMPLETE) {
-        setAutocompletion(response.data);
-      }
-    })
-    .catch((response) => {
-      console.error(response.errors.message);
-    });
-  }
-
   const inputChange = event => {
     changeKeyword(event.target.value);
-    getUser(event.target.value, AUTOCOMPLETE);
+    autocompletionChanged();
   }
 
   const handleSelect = val => {
     changeKeyword(val);
-    setAutocompletion([val]);
-    keyword && getUser(val, SEARCH);
+    autocompletionChanged();
+    keyword && fetchData();
   };
 
   const handleSubmit = () => {
-    keyword &&
-    getUser(keyword, SEARCH)
+    keyword && fetchData();
   };
 
   const highlightResults = (highlightedText, searchWords) => {
@@ -149,6 +117,9 @@ const Search = ({
           </div>
         }
       </div>
+      {error &&
+        <p className="error">{error}</p>
+      }
     </div>
   )
 }
